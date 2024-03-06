@@ -69,6 +69,20 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     /**
+     * 启用/禁用 员工账号
+     * @param status
+     * @param id
+     */
+    @Override
+    public void state(Integer status, long id) {
+        Employee employee = Employee.builder()
+                .status(status)
+                .id(id).build();
+
+        employeeMapper.update(employee);
+    }
+
+    /**
      * 员工登录
      *
      * @param employeeLoginDTO
