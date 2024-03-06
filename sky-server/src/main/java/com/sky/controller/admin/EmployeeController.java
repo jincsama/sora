@@ -111,9 +111,35 @@ public class EmployeeController {
      */
     @PostMapping("/status/{status}")
     @ApiOperation("启用/禁用 员工账号")
-    public Result state(@PathVariable Integer status,long id){
+    public Result state(@PathVariable Integer status,Long id){
         log.info("启用/禁用 员工账号:{},{}", status, id);
         employeeService.state(status, id);
+        return Result.success();
+    }
+
+    /**
+     * 根据id查询员工
+     * @param id
+     * @return
+     */
+    @GetMapping("/{id}")
+    @ApiOperation("根据id查询员工")
+    public  Result<Employee> getById(@PathVariable Long id){
+        Employee employee = employeeService.getById(id);
+
+        return Result.success(employee);
+    }
+
+    /**
+     * 更新员工数据
+     * @param employeeDTO
+     * @return
+     */
+    @PutMapping
+    @ApiOperation("更新员工数据")
+    public Result updata(@RequestBody EmployeeDTO employeeDTO){
+        employeeService.updata(employeeDTO);
+
         return Result.success();
     }
 }
