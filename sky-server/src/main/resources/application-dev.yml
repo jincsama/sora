@@ -6,3 +6,10 @@ sky:
     database: sky_take_out
     username: root
     password: 662535
+  qcloud:
+    regions:
+    secret-id:
+    secret-key:
+    bucket-name:
+    local-file-path:
+    file-path:
