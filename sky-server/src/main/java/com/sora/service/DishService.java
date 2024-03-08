@@ -3,6 +3,7 @@ package com.sora.service;
 import com.sora.dto.DishDTO;
 import com.sora.dto.DishPageQueryDTO;
 import com.sora.result.PageResult;
+import com.sora.vo.DishVO;
 
 import java.util.List;
 
@@ -17,4 +18,8 @@ public interface DishService {
     PageResult pageQuery(DishPageQueryDTO dishPageQueryDTO);
 
     void delete(List<Long> ids);
+
+    DishVO getByIdWithFlavor(Long id);
+
+    void updateWithFlavor(DishDTO dishDTO);
 }
