@@ -38,6 +38,9 @@ logging:
         controller: info
 
 sky:
+  wechat:
+    appid: ${sky.wechat.appid}
+    secret: ${sky.wechat.secret}
   jwt:
     # 设置jwt签名加密时使用的秘钥
     admin-secret-key: itcast
@@ -45,6 +48,9 @@ sky:
     admin-ttl: 7200000
     # 设置前端传递过来的令牌名称
     admin-token-name: token
+    user-secret-key: itsora
+    user-ttl: 7200000
+    user-token-name: authentication
   qcloud:
     regions: ${sky.qcloud.regions}
     secret-id: ${sky.qcloud.secret-id}

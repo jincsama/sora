@@ -52,5 +52,12 @@ public interface DishMapper {
 
     @AutoFill(value = OperationType.UPDATE)
     void update(Dish dish);
+
+    /**
+     * 动态查询菜单和口味
+     * @param dish
+     * @return
+     */
+    List<Dish> list(Dish dish);
 }
 
