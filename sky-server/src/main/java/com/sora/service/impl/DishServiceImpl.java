@@ -11,13 +11,15 @@ import com.sora.entity.DishFlavor;
 import com.sora.exception.DeletionNotAllowedException;
 import com.sora.mapper.DishFlavorMapper;
 import com.sora.mapper.DishMapper;
-import com.sora.mapper.setMealDishMapper;
+import com.sora.mapper.setmealDishMapper;
 import com.sora.result.PageResult;
 import com.sora.service.DishService;
 import com.sora.vo.DishVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,7 +35,9 @@ public class DishServiceImpl implements DishService {
     @Autowired
     private DishFlavorMapper dishFlavorMapper;
     @Autowired
-    private setMealDishMapper setMealDishMapper;
+    private setmealDishMapper setMealDishMapper;
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     /**
      * 新增菜品及口味
@@ -92,8 +96,18 @@ public class DishServiceImpl implements DishService {
             throw new DeletionNotAllowedException(MessageConstant.DISH_BE_RELATED_BY_SETMEAL);
         }
         //删除
+
+        cacheEvict(dishMapper.getByIds(ids));
         dishMapper.delete(ids);
         dishFlavorMapper.deleteByDishId(ids);
+    }
+
+    @CacheEvict(cacheNames = "dishCache", key = "#categoryIds")
+    public void cacheEvict(List<Long> categoryIds) {
+    }
+
+    @CacheEvict(cacheNames = "dishCache", key = "#categoryIds")
+    public void cacheEvict(Long categoryIds) {
     }
 
     /**
@@ -137,17 +151,19 @@ public class DishServiceImpl implements DishService {
 
     /**
      * 条件查询菜品和口味
+     *
      * @param dish
      * @return
      */
     public List<DishVO> listWithFlavor(Dish dish) {
+        //查询数据库
         List<Dish> dishList = dishMapper.list(dish);
 
         List<DishVO> dishVOList = new ArrayList<>();
 
         for (Dish d : dishList) {
             DishVO dishVO = new DishVO();
-            BeanUtils.copyProperties(d,dishVO);
+            BeanUtils.copyProperties(d, dishVO);
 
             //根据菜品id查询对应的口味
             List<DishFlavor> flavors = dishFlavorMapper.getByDishId(d.getId());
@@ -157,5 +173,30 @@ public class DishServiceImpl implements DishService {
         }
 
         return dishVOList;
+    }
+
+    /**
+     * 根据分类id查询菜品
+     *
+     * @param categoryId
+     * @return
+     */
+    public List<Dish> list(Long categoryId) {
+        Dish dish = Dish.builder()
+                .categoryId(categoryId)
+                .status(StatusConstant.ENABLE)
+                .build();
+        return dishMapper.list(dish);
+    }
+
+    /**
+     * 套餐起售、停售
+     *
+     * @param status
+     * @param id
+     */
+    public void startOrStop(Integer status, Long id) {
+        dishMapper.startOrStop(status, id);
+        cacheEvict(dishMapper.getById(id).getCategoryId());
     }
 }

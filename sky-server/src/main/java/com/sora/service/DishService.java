@@ -3,6 +3,7 @@ package com.sora.service;
 import com.sora.dto.DishDTO;
 import com.sora.dto.DishPageQueryDTO;
 import com.sora.entity.Dish;
+import com.sora.entity.Setmeal;
 import com.sora.result.PageResult;
 import com.sora.vo.DishVO;
 
@@ -25,4 +26,8 @@ public interface DishService {
     void updateWithFlavor(DishDTO dishDTO);
 
     List<DishVO> listWithFlavor(Dish dish);
+
+    List<Dish> list(Long categoryId);
+
+    void startOrStop(Integer status, Long id);
 }
